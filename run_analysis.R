@@ -1,3 +1,5 @@
+#Here I read in the information from the files. I have the "UCI HAR Dataset" folder in my working directory.
+
 ActivityLabels <- read.table("UCI HAR Dataset/activity_labels.txt")
 FnameaturesInfo <- readLines("UCI HAR Dataset/features_info.txt")
 Features <- read.table("UCI HAR Dataset/features.txt")
@@ -21,7 +23,6 @@ MeanRows <- subset(Features, regexpr("mean\\(\\)", Features[,2]) > 0)
 STDRows <- subset(Features, regexpr("std", Features[,2]) > 0)
 Rows <- rbind(MeanRows, STDRows)
 X <- X[,Rows$V1]
-X <- X
 X$Activity <- Y$V1
 X$Activity <-  gsub("1", "Walking", X$Activity)
 X$Activity <-  gsub("2", "Walking Upstairs", X$Activity)
@@ -36,14 +37,12 @@ for(i in 2:length(X)) {
   ActivityNames[i - 1] <- as.character(Features[as.numeric(substr(names(X)[i], 2, nchar(names(X)[i]))), 2])
 }
 
-X <- X
 names(X)[2:67] <- ActivityNames
-X <- X
 X$subject <- Subject$V1
 X <- X[c(68,1:67)]
 X <- aggregate(X[,3:68], list(X$subject, X$Activity), FUN = mean)
 names(X)[1] <- "Subject"
 names(X)[2] <- "Activity"
-
+write.csv(X, file = "tidydata.txt")
 
 
